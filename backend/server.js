@@ -48,17 +48,31 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/cbserp_db';
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
+// Ensure MongoDB connection in Serverless environment
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected && mongoose.connection.readyState === 1) return;
+  try {
+    await mongoose.connect(MONGO_URI);
+    isConnected = true;
     console.log('✅ Connected to MongoDB database successfully.');
+  } catch (err) {
+    console.error('❌ Database Connection Error:', err.message);
+  }
+};
+
+// Middleware to check DB connection for each request
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+if (require.main === module) {
+  connectDB().then(() => {
     app.listen(PORT, () => {
       console.log(`🚀 CBSERP Backend Server running on port ${PORT}`);
     });
-  })
-  .catch((err) => {
-    console.error('❌ Database Connection Error:', err.message);
-    console.log('⚠️ Starting server without active DB connection (Fallback Mode)...');
-    app.listen(PORT, () => {
-      console.log(`🚀 CBSERP Backend Server running on port ${PORT} (Fallback Mode)`);
-    });
   });
+}
+
+module.exports = app;
