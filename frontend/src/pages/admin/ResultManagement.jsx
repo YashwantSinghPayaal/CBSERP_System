@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api, { getFileUrl } from '../../utils/api';
 import {
   Award,
   Upload,
@@ -288,7 +288,7 @@ export default function ResultManagement() {
                   <div className="flex items-center gap-2 shrink-0">
                     {resItem.pdfUrl && (
                       <a
-                        href={resItem.pdfUrl}
+                        href={getFileUrl(resItem.pdfUrl)}
                         target="_blank"
                         rel="noreferrer"
                         className="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition-all"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api, { getFileUrl } from '../../utils/api';
 import { Award, FileText, ExternalLink, Sparkles } from 'lucide-react';
 
 export default function StudentResults() {
@@ -104,7 +104,7 @@ export default function StudentResults() {
 
                 {resItem.pdfUrl && (
                   <a
-                    href={resItem.pdfUrl}
+                    href={getFileUrl(resItem.pdfUrl)}
                     target="_blank"
                     rel="noreferrer"
                     className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all shrink-0"

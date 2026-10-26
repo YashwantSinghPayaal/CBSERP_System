@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api, { getFileUrl } from '../../utils/api';
 import {
   Bell,
   FileText,
@@ -201,7 +201,7 @@ export default function AnnouncementManagement() {
                   <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
                     {ann.pdfUrl && (
                       <a
-                        href={ann.pdfUrl}
+                        href={getFileUrl(ann.pdfUrl)}
                         target="_blank"
                         rel="noreferrer"
                         className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition-all"

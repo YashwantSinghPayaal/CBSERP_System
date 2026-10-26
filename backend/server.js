@@ -14,15 +14,45 @@ const resultRoutes = require('./routes/resultRoutes');
 
 const app = express();
 
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cbserp_db';
+
+// Ensure MongoDB connection in Serverless environment (cached across function invocations)
+let isConnected = false;
+const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  try {
+    await mongoose.connect(MONGO_URI);
+    isConnected = true;
+    console.log('✅ Connected to MongoDB database successfully.');
+  } catch (err) {
+    console.error('❌ Database Connection Error:', err.message);
+  }
+};
+
 // Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve Static Uploaded PDFs
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve Static Uploaded PDFs (handles serverless writable /tmp on Vercel)
+const uploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsDir));
 
-// Health check endpoint
+// Database connection check middleware for each incoming request
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+// Root & Health check endpoints
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'CBSERP School ERP Server API is running' });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'CBSERP School ERP Server is running smoothly' });
 });
@@ -43,28 +73,6 @@ app.use((err, req, res, next) => {
     success: false,
     message: err.message || 'Internal Server Error'
   });
-});
-
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cbserp_db';
-
-// Ensure MongoDB connection in Serverless environment
-let isConnected = false;
-const connectDB = async () => {
-  if (isConnected && mongoose.connection.readyState === 1) return;
-  try {
-    await mongoose.connect(MONGO_URI);
-    isConnected = true;
-    console.log('✅ Connected to MongoDB database successfully.');
-  } catch (err) {
-    console.error('❌ Database Connection Error:', err.message);
-  }
-};
-
-// Middleware to check DB connection for each request
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
 });
 
 if (require.main === module) {

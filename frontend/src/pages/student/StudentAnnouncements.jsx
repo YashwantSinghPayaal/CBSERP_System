@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api, { getFileUrl } from '../../utils/api';
 import { Bell, FileText, ExternalLink } from 'lucide-react';
 
 export default function StudentAnnouncements() {
@@ -69,7 +69,7 @@ export default function StudentAnnouncements() {
                 {ann.pdfUrl && (
                   <div className="shrink-0 self-start sm:self-center">
                     <a
-                      href={ann.pdfUrl}
+                      href={getFileUrl(ann.pdfUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition-all"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../utils/api';
+import api, { getFileUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { animateCountUp, animateStaggerList } from '../../utils/animations';
 import {
@@ -165,7 +165,7 @@ export default function StudentDashboard() {
                   </div>
                   {ann.pdfUrl && (
                     <a
-                      href={ann.pdfUrl}
+                      href={getFileUrl(ann.pdfUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="px-3 py-1 bg-purple-600/20 text-purple-300 hover:bg-purple-600 hover:text-white rounded-lg text-3xs font-bold transition-all flex items-center gap-1"
